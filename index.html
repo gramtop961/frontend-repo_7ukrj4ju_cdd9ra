@@ -1,18 +1,654 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flames App</title>
-    <link rel="icon" type="image/x-icon" href="favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-mono/style.css">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NutriBite — Restoran Sehat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f14; --panel:#0f1620; --muted:#8aa0b3; --text:#e7eef6; --accent:#58d68d; --accent-2:#55b6ff; --danger:#ff6b6b;
+      --ring: rgba(88,214,141,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial; color:var(--text); background:linear-gradient(180deg,#0a0e13,#0b1118 30%,#0b0f14 100%)}
+    a{color:inherit}
+    h1,h2,h3{margin:0 0 .5rem}
+    .container{max-width:1200px; margin:0 auto; padding:16px}
+    header{
+      position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.2) blur(6px);
+      background:linear-gradient(180deg,rgba(15,22,32,.9),rgba(15,22,32,.6)); border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .brand{display:flex; align-items:center; gap:.6rem}
+    .logo{width:36px; height:36px; border-radius:10px; background:
+      radial-gradient(120px 60px at -10% 120%, rgba(85,182,255,.35), transparent 55%),
+      radial-gradient(120px 60px at 120% -10%, rgba(88,214,141,.35), transparent 55%),
+      linear-gradient(135deg,#162231,#0f1620); border:1px solid rgba(255,255,255,.08)}
+    .brand-title{font-weight:700; letter-spacing:.2px}
+    .grid{display:grid; gap:16px}
+    .two-col{grid-template-columns:1fr;}
+    @media(min-width:980px){.two-col{grid-template-columns:1.6fr .9fr}}
+    .panel{background:linear-gradient(180deg,#0f1620,#0d131c); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:16px}
+    .toolbar{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
+    .toolbar > *{flex:1 1 auto}
+    .search{display:flex; align-items:center; gap:8px; background:#0c121a; border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:8px 10px}
+    .search input{all:unset; flex:1; color:var(--text)}
+    .select, .btn, select, input[type="number"], input[type="text"]{appearance:none; background:#0c121a; border:1px solid rgba(255,255,255,.08); color:var(--text); border-radius:10px; padding:10px 12px}
+    select{width:100%}
+    .btn{background:linear-gradient(180deg,#182233,#121a26); cursor:pointer}
+    .btn-primary{background:linear-gradient(180deg,#2a7e56,#236b48); border-color:#2e9b69}
+    .btn-ghost{background:transparent; border-color:rgba(255,255,255,.12)}
+    .btn-danger{background:linear-gradient(180deg,#a43a3a,#8a2e2e); border-color:#d25555}
+    .btn:focus-visible{outline:2px solid var(--ring)}
+    .chips{display:flex; gap:8px; flex-wrap:wrap}
+    .chip{padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.10); background:#0c121a; font-size:.85rem; cursor:pointer}
+    .chip.active{background:rgba(88,214,141,.12); border-color:var(--accent); color:var(--accent)}
+    .menu-grid{display:grid; grid-template-columns:repeat(1,minmax(0,1fr)); gap:12px}
+    @media(min-width:640px){.menu-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:1080px){.menu-grid{grid-template-columns:repeat(3,1fr)}}
+    .card{position:relative; overflow:hidden; border-radius:14px; border:1px solid rgba(255,255,255,.06); background:
+      radial-gradient(120px 60px at 110% -10%, rgba(85,182,255,.12), transparent 60%),
+      linear-gradient(180deg,#0f1620,#0d141d)}
+    .card-body{padding:14px}
+    .badge{position:absolute; top:10px; left:10px; background:linear-gradient(180deg,#ffd166,#f6b23e); color:#2b1900; font-weight:700; padding:4px 10px; border-radius:999px; font-size:.75rem; border:1px solid rgba(0,0,0,.1)}
+    .price{font-weight:700; color:#cce9ff}
+    .muted{color:var(--muted)}
+    .stars{color:#ffc85a}
+    .qty{display:flex; align-items:center; gap:8px}
+    .qty button{width:32px; height:32px; border-radius:8px}
+    .list{display:grid; gap:10px}
+    .row{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .divider{height:1px; background:rgba(255,255,255,.06); margin:10px 0}
+    .right-sticky{position:sticky; top:88px}
+
+    /* Cart mini panel on mobile */
+    .cart-fab{position:fixed; bottom:16px; right:16px; z-index:50; display:none}
+    @media(max-width:979px){.cart-fab{display:block}}
+    .drawer{position:fixed; left:0; right:0; bottom:-100%; background:#0f1620; border-top:1px solid rgba(255,255,255,.08); border-radius:16px 16px 0 0; padding:16px; transition:bottom .25s ease; max-height:80vh; overflow:auto; z-index:60}
+    .drawer.open{bottom:0}
+
+    /* Print styles */
+    @media print{
+      header, .no-print, .cart-fab, .drawer{display:none !important}
+      body{background:white; color:black}
+      .receipt{display:block !important; border:none}
+    }
+    .receipt{display:none}
+    .order-code{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px">
+      <div class="brand" aria-label="NutriBite">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="brand-title">NutriBite</div>
+          <div class="muted" style="font-size:.85rem">Restoran Sehat & Lezat</div>
+        </div>
+      </div>
+      <div class="toolbar" style="max-width:780px">
+        <div class="search" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="#8aa0b3" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11" r="7" stroke="#8aa0b3" stroke-width="1.6"/></svg>
+          <input id="q" type="text" placeholder="Cari menu sehat... (contoh: salad, kopi)" aria-label="Pencarian menu" />
+        </div>
+        <select id="service" aria-label="Opsi layanan">
+          <option value="dine-in">Makan di tempat</option>
+          <option value="drive-thru">Drive-thru</option>
+          <option value="delivery">Delivery</option>
+        </select>
+        <select id="sort" aria-label="Urutkan">
+          <option value="rating-desc">Sortir: Rating Tertinggi</option>
+          <option value="price-asc">Sortir: Harga Termurah</option>
+          <option value="price-desc">Sortir: Harga Termahal</option>
+          <option value="name-asc">Sortir: Nama A-Z</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="container grid two-col" aria-live="polite">
+    <section class="panel" aria-labelledby="filters-title">
+      <h2 id="filters-title">Rekomendasi & Filter</h2>
+      <div class="divider"></div>
+
+      <div class="panel" style="background:linear-gradient(180deg,#122033,#0f1620)" aria-label="Rekomendasi Best Seller">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px">
+          <strong>Best Seller</strong>
+          <button class="btn btn-ghost no-print" id="btnShowAll">Lihat semua</button>
+        </div>
+        <div id="bestList" class="list" style="margin-top:10px"></div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="chips" role="group" aria-label="Kategori">
+        <button class="chip active" data-cat="all">Semua</button>
+        <button class="chip" data-cat="food">Makan</button>
+        <button class="chip" data-cat="drink">Minuman</button>
+        <button class="chip" data-cat="snack">Snack</button>
+        <button class="chip" data-best="true">Best Seller</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:10px">
+        <div>
+          <label class="muted" for="subcat">Subkategori</label>
+          <select id="subcat">
+            <option value="all">Semua</option>
+            <optgroup label="Makan">
+              <option value="heavy">Makan berat</option>
+              <option value="light">Makan ringan</option>
+            </optgroup>
+            <optgroup label="Minuman">
+              <option value="juice">Jus</option>
+              <option value="coffee-tea">Kopi/Teh</option>
+            </optgroup>
+            <optgroup label="Snack">
+              <option value="snack">Snack</option>
+            </optgroup>
+          </select>
+        </div>
+        <div>
+          <label class="muted" for="minRating">Min Rating</label>
+          <select id="minRating">
+            <option value="0">Semua</option>
+            <option value="3">3+</option>
+            <option value="4">4+</option>
+            <option value="4.5">4.5+</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="menu" class="menu-grid" style="margin-top:12px" aria-label="Daftar menu"></div>
+    </section>
+
+    <aside class="panel right-sticky" aria-labelledby="cart-title">
+      <h2 id="cart-title">Pesanan & Pembayaran</h2>
+      <div class="divider"></div>
+
+      <div id="cart" class="list" aria-live="polite"></div>
+      <div class="divider"></div>
+
+      <div>
+        <strong>Promo & Kupon</strong>
+        <div class="row" style="margin-top:8px">
+          <input id="couponCode" type="text" placeholder="Masukkan kode promo" aria-label="Kode promo" />
+          <button id="applyCoupon" class="btn">Klaim</button>
+        </div>
+        <div id="couponMsg" class="muted" style="margin-top:6px"></div>
+        <details style="margin-top:10px">
+          <summary class="muted">Lihat daftar promo</summary>
+          <div id="couponList" class="list" style="margin-top:8px"></div>
+        </details>
+      </div>
+
+      <div class="divider"></div>
+      <div>
+        <strong>Metode Pembayaran</strong>
+        <div class="list" style="margin-top:8px">
+          <label><input type="radio" name="pay" value="bank"/> Transfer Bank (min 25.000)</label>
+          <label><input type="radio" name="pay" value="ewallet"/> E-Wallet (min 10.000)</label>
+          <label><input type="radio" name="pay" value="debit"/> Kartu Debit (min 20.000)</label>
+          <label><input type="radio" name="pay" value="cash"/> Tunai (tanpa minimum)</label>
+        </div>
+        <div id="payMsg" class="muted" style="margin-top:6px"></div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="list">
+        <div class="row"><span>Subtotal</span><strong id="subtotal">Rp0</strong></div>
+        <div class="row"><span>Diskon</span><strong id="discount">- Rp0</strong></div>
+        <div class="row"><span>Biaya Layanan</span><strong id="serviceFee">Rp0</strong></div>
+        <div class="row"><span>Total</span><strong id="total" style="font-size:1.2rem">Rp0</strong></div>
+        <button id="placeOrder" class="btn btn-primary" disabled>Bayar & Cetak Struk</button>
+        <div class="muted" style="font-size:.85rem">Nota ringkas akan dicetak; pastikan pop-up print diizinkan.</div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Mobile cart floating button -->
+  <button class="btn btn-primary cart-fab" id="openCart" aria-label="Buka keranjang">Keranjang</button>
+  <div class="drawer" id="drawer">
+    <div class="row"><strong>Keranjang</strong><button id="closeCart" class="btn btn-ghost">Tutup</button></div>
+    <div id="cartMobile" class="list" style="margin-top:10px"></div>
+  </div>
+
+  <!-- Receipt (print only) -->
+  <section class="panel receipt container" id="receipt">
+    <h2>NutriBite — Struk Pembelian</h2>
+    <div class="muted">Sehat, lezat, dan bergizi</div>
+    <div class="divider"></div>
+    <div id="receiptMeta" class="list"></div>
+    <div class="divider"></div>
+    <div id="receiptItems" class="list"></div>
+    <div class="divider"></div>
+    <div id="receiptTotals" class="list"></div>
+    <div style="margin-top:10px" class="muted">Terima kasih telah berbelanja!</div>
+  </section>
+
+  <script>
+  (function(){
+    'use strict';
+
+    // Utils
+    const fmt = new Intl.NumberFormat('id-ID',{style:'currency', currency:'IDR', maximumFractionDigits:0});
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+    // Data contoh menu — dapat diperluas
+    const Data = (()=>{
+      const items = [
+        // Food - heavy
+        {id:'grilled-chicken', name:'Grilled Chicken Bowl', desc:'Dada ayam panggang, quinoa, sayuran kukus', price:52000, rating:4.7, category:'food', sub:'heavy', best:true, tags:['protein','low-fat']},
+        {id:'salmon-teriyaki', name:'Salmon Teriyaki', desc:'Salmon saus teriyaki rendah gula, brokoli', price:78000, rating:4.8, category:'food', sub:'heavy', best:true, tags:['omega-3']},
+        {id:'vegan-bibimbap', name:'Vegan Bibimbap', desc:'Sayur warna-warni, tofu, saus gochujang ringan', price:59000, rating:4.6, category:'food', sub:'heavy', best:false, tags:['vegan']},
+        // Food - light
+        {id:'salad-bowl', name:'Power Green Salad', desc:'Kale, alpukat, kacang, dressing lemon', price:45000, rating:4.5, category:'food', sub:'light', best:true, tags:['fiber','keto']},
+        {id:'wrap-tuna', name:'Tuna Wholegrain Wrap', desc:'Tuna, sayur, roti gandum', price:38000, rating:4.2, category:'food', sub:'light', best:false, tags:['wholegrain']},
+        // Drinks - juice
+        {id:'detox-juice', name:'Detox Green Juice', desc:'Seledri, apel, lemon', price:22000, rating:4.4, category:'drink', sub:'juice', best:false, tags:['fresh']},
+        {id:'sunrise-juice', name:'Sunrise Carrot Juice', desc:'Wortel, jeruk, jahe', price:24000, rating:4.5, category:'drink', sub:'juice', best:false, tags:['vitamin A']},
+        // Drinks - coffee/tea
+        {id:'oat-latte', name:'Oat Milk Latte', desc:'Espresso, susu oat rendah gula', price:28000, rating:4.6, category:'drink', sub:'coffee-tea', best:true, tags:['oat-milk']},
+        {id:'honey-lemon-tea', name:'Honey Lemon Tea', desc:'Teh hangat, madu hutan, lemon', price:18000, rating:4.3, category:'drink', sub:'coffee-tea', best:false, tags:['soothing']},
+        // Snack
+        {id:'energy-balls', name:'Cacao Energy Balls', desc:'Kurma, kacang, kakao', price:16000, rating:4.1, category:'snack', sub:'snack', best:false, tags:['natural-sweet']},
+        {id:'chia-pudding', name:'Chia Pudding', desc:'Chia, susu almond, berry', price:26000, rating:4.4, category:'snack', sub:'snack', best:true, tags:['omega-3']},
+      ];
+      return {items};
+    })();
+
+    // Kupon contoh
+    const Coupons = (()=>{
+      const list = [
+        {code:'HEMAT10', type:'percent', value:10, minTotal:50000, note:'Diskon 10% min. belanja 50K', appliesTo:null},
+        {code:'DIET20K', type:'flat', value:20000, minTotal:80000, note:'Potongan 20K khusus salad/chicken', appliesTo:{ids:['salad-bowl','grilled-chicken']}},
+        {code:'COFFEE5', type:'flat', value:5000, minTotal:20000, note:'Potongan 5K untuk kopi/teh', appliesTo:{category:'drink', sub:'coffee-tea'}},
+      ];
+      const find = c => list.find(x=>x.code.toUpperCase()===c.toUpperCase());
+      const calcDiscount = (cartItems, subtotal, coupon) => {
+        if(!coupon) return 0;
+        if(subtotal < (coupon.minTotal||0)) return 0;
+        let eligibleTotal = subtotal;
+        if(coupon.appliesTo){
+          const eligibles = cartItems.filter(ci=>{
+            const item = Data.items.find(i=>i.id===ci.id);
+            if(!item) return false;
+            if(coupon.appliesTo.ids) return coupon.appliesTo.ids.includes(item.id);
+            if(coupon.appliesTo.category){
+              if(item.category!==coupon.appliesTo.category) return false;
+              if(coupon.appliesTo.sub) return item.sub===coupon.appliesTo.sub;
+              return true;
+            }
+            return false;
+          });
+          eligibleTotal = eligibles.reduce((s,ci)=>{
+            const item = Data.items.find(i=>i.id===ci.id); return s + item.price*ci.qty;
+          },0);
+          if(eligibleTotal<=0) return 0;
+        }
+        if(coupon.type==='percent') return Math.floor(eligibleTotal * (coupon.value/100));
+        if(coupon.type==='flat') return Math.min(coupon.value, eligibleTotal);
+        return 0;
+      };
+      return {list, find, calcDiscount};
+    })();
+
+    // Persistensi sederhana
+    const Storage = (()=>{
+      const safe = (k, fallback) => { try{ const v=localStorage.getItem(k); return v?JSON.parse(v):fallback }catch{ return fallback } };
+      const set = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+      return {safe,set};
+    })();
+
+    // State utama aplikasi
+    const State = (()=>{
+      let cart = Storage.safe('nb_cart', []); // [{id, qty}]
+      let filters = Storage.safe('nb_filters', {q:'', cat:'all', sub:'all', minRating:0, best:false, sort:'rating-desc'});
+      let service = Storage.safe('nb_service','dine-in');
+      let couponCode = Storage.safe('nb_coupon', null);
+      let payMethod = Storage.safe('nb_pay', 'cash');
+      const getCart = () => cart.slice();
+      const setCart = (v)=>{ cart=v; Storage.set('nb_cart', cart); Events.emit('cart:changed'); };
+      const setFilters = (f)=>{ filters={...filters,...f}; Storage.set('nb_filters', filters); Events.emit('filters:changed'); };
+      const getFilters = ()=>({ ...filters });
+      const setService = (s)=>{ service=s; Storage.set('nb_service', s); Events.emit('service:changed'); };
+      const getService = ()=> service;
+      const setCoupon = (c)=>{ couponCode=c; Storage.set('nb_coupon', c); Events.emit('coupon:changed'); };
+      const getCoupon = ()=> couponCode;
+      const setPay = (p)=>{ payMethod=p; Storage.set('nb_pay', p); Events.emit('pay:changed'); };
+      const getPay = ()=> payMethod;
+      return {getCart,setCart,getFilters,setFilters,setService,getService,setCoupon,getCoupon,setPay,getPay};
+    })();
+
+    // Event bus kecil
+    const Events = (()=>{
+      const map = new Map();
+      const on = (ev, cb)=>{ map.set(ev, (map.get(ev)||[]).concat(cb)); };
+      const emit = (ev, payload)=>{ (map.get(ev)||[]).forEach(fn=>{ try{fn(payload)}catch(e){console.error(e)} }); };
+      return {on,emit};
+    })();
+
+    // Keranjang
+    const Cart = (()=>{
+      const add = (id)=>{
+        const cart = State.getCart();
+        const found = cart.find(c=>c.id===id);
+        if(found) found.qty += 1; else cart.push({id, qty:1});
+        State.setCart(cart);
+      };
+      const remove = (id)=>{ State.setCart(State.getCart().filter(c=>c.id!==id)); };
+      const setQty = (id, qty)=>{
+        const q = Math.max(0, Math.min(99, qty|0));
+        const cart = State.getCart();
+        const found = cart.find(c=>c.id===id);
+        if(!found) return;
+        if(q<=0) return remove(id);
+        found.qty = q; State.setCart(cart);
+      };
+      const calc = ()=>{
+        const cart = State.getCart();
+        let subtotal = 0;
+        const items = cart.map(ci=>{
+          const item = Data.items.find(i=>i.id===ci.id);
+          const line = item.price * ci.qty; subtotal += line;
+          return { ...item, qty:ci.qty, line };
+        });
+        const coupon = State.getCoupon() ? Coupons.find(State.getCoupon()) : null;
+        const discount = Coupons.calcDiscount(cart, subtotal, coupon);
+        const fee = serviceFee(State.getService());
+        const total = Math.max(0, subtotal - discount + fee);
+        return {items, subtotal, discount, fee, total, coupon};
+      };
+      const serviceFee = (service)=>{
+        if(service==='delivery') return 8000; // ongkir flat contoh
+        if(service==='drive-thru') return 2000; // biaya layanan kecil
+        return 0; // dine-in
+      };
+      return {add,remove,setQty,calc};
+    })();
+
+    // Render UI
+    const UI = (()=>{
+      const star = (r)=>{
+        const full = Math.floor(r), half = r - full >= 0.5;
+        let s=''; for(let i=0;i<5;i++){ s += i<full ? '★' : (i===full && half ? '☆' : '☆'); }
+        return `<span class="stars" aria-label="rating ${r}">${s}</span>`;
+      };
+      const chipsBind = ()=>{
+        $$('.chip').forEach(ch=>{
+          ch.addEventListener('click',()=>{
+            $$('.chip').forEach(c=>c.classList.remove('active'));
+            ch.classList.add('active');
+            const cat = ch.dataset.cat || State.getFilters().cat;
+            const best = ch.dataset.best? true : false;
+            State.setFilters({cat, best});
+          });
+        });
+      };
+      const renderBest = ()=>{
+        const bests = Data.items.filter(i=>i.best).slice(0,4);
+        $('#bestList').innerHTML = bests.map(i=>`
+          <div class="row" style="align-items:flex-start">
+            <div>
+              <div><strong>${i.name}</strong> ${i.best?'<span class="badge" style="position:static; margin-left:6px">Best</span>':''}</div>
+              <div class="muted" style="font-size:.9rem">${i.desc}</div>
+            </div>
+            <div class="row" style="gap:8px">
+              <div class="price">${fmt.format(i.price)}</div>
+              <button class="btn btn-primary" data-add="${i.id}">Tambah</button>
+            </div>
+          </div>
+        `).join('');
+      };
+      const renderMenu = ()=>{
+        const f = State.getFilters();
+        const q = f.q.trim().toLowerCase();
+        let list = Data.items.filter(i=>{
+          if(f.cat!=='all' && i.category!==f.cat) return false;
+          if(f.sub!=='all' && i.sub!==f.sub) return false;
+          if(i.rating < Number(f.minRating||0)) return false;
+          if(f.best && !i.best) return false;
+          if(q && !(i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q) || (i.tags||[]).some(t=>t.toLowerCase().includes(q)))) return false;
+          return true;
+        });
+        switch(f.sort){
+          case 'price-asc': list.sort((a,b)=>a.price-b.price); break;
+          case 'price-desc': list.sort((a,b)=>b.price-a.price); break;
+          case 'name-asc': list.sort((a,b)=>a.name.localeCompare(b.name)); break;
+          default: list.sort((a,b)=>b.rating-a.rating);
+        }
+        $('#menu').innerHTML = list.map(i=>`
+          <article class="card" aria-label="${i.name}">
+            ${i.best?'<div class="badge" aria-label="Best seller">Best</div>':''}
+            <div class="card-body">
+              <div class="row">
+                <div>
+                  <h3>${i.name}</h3>
+                  <div class="muted" style="min-height:38px">${i.desc}</div>
+                  <div class="row" style="gap:8px; margin-top:6px">
+                    ${star(i.rating)}
+                    <span class="muted" style="font-size:.85rem">${i.rating.toFixed(1)}</span>
+                  </div>
+                </div>
+                <div class="list" style="align-items:flex-end; min-width:160px">
+                  <div class="price">${fmt.format(i.price)}</div>
+                  <div class="qty" data-qty="${i.id}">
+                    <button class="btn" data-dec="${i.id}" aria-label="Kurangi">-</button>
+                    <input type="number" min="0" max="99" value="${(State.getCart().find(c=>c.id===i.id)||{qty:0}).qty}" aria-label="Jumlah" style="width:56px; text-align:center"/>
+                    <button class="btn" data-inc="${i.id}" aria-label="Tambah">+</button>
+                  </div>
+                  <button class="btn btn-primary" data-add="${i.id}">Tambah ke Keranjang</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        `).join('') || '<div class="muted">Tidak ada menu yang cocok.</div>';
+      };
+      const renderCartInto = (el)=>{
+        const c = Cart.calc();
+        const rows = c.items.map(x=>`
+          <div class="row">
+            <div>
+              <div><strong>${x.name}</strong></div>
+              <div class="muted" style="font-size:.85rem">${fmt.format(x.price)} × ${x.qty}</div>
+            </div>
+            <div class="row" style="gap:8px">
+              <button class="btn" data-dec="${x.id}">-</button>
+              <span aria-label="Jumlah">${x.qty}</span>
+              <button class="btn" data-inc="${x.id}">+</button>
+              <button class="btn btn-danger" data-del="${x.id}" aria-label="Hapus">Hapus</button>
+            </div>
+          </div>
+        `).join('') || '<div class="muted">Keranjang kosong</div>';
+        el.innerHTML = rows;
+      };
+      const renderCart = ()=>{
+        renderCartInto($('#cart'));
+        renderCartInto($('#cartMobile'));
+        const c = Cart.calc();
+        $('#subtotal').textContent = fmt.format(c.subtotal);
+        $('#discount').textContent = '- ' + fmt.format(c.discount);
+        $('#serviceFee').textContent = fmt.format(c.fee);
+        $('#total').textContent = fmt.format(c.total);
+        validatePay();
+      };
+      const renderCoupons = ()=>{
+        $('#couponList').innerHTML = Coupons.list.map(cp=>`
+          <div class="row">
+            <div>
+              <strong>${cp.code}</strong>
+              <div class="muted" style="font-size:.85rem">${cp.note}${cp.minTotal?` — Min ${fmt.format(cp.minTotal)}`:''}</div>
+            </div>
+            <button class="btn" data-claim="${cp.code}">Klaim</button>
+          </div>
+        `).join('');
+        const code = State.getCoupon();
+        $('#couponCode').value = code || '';
+        showCouponMessage();
+      };
+      const showCouponMessage = ()=>{
+        const code = State.getCoupon();
+        const c = Cart.calc();
+        const el = $('#couponMsg');
+        if(!code){ el.textContent = 'Tidak ada promo yang diterapkan.'; return; }
+        const cp = Coupons.find(code);
+        if(!cp){ el.textContent = 'Kode tidak valid.'; return; }
+        const okMin = c.subtotal >= (cp.minTotal||0);
+        // cek eligibility
+        const disc = Coupons.calcDiscount(State.getCart(), c.subtotal, cp);
+        if(!okMin){ el.textContent = `Belanja minimal ${fmt.format(cp.minTotal)} untuk menggunakan ${cp.code}.`; return; }
+        if(disc<=0){ el.textContent = `Tidak ada item yang memenuhi syarat kupon ${cp.code}.`; return; }
+        el.textContent = `${cp.code} diterapkan. Anda hemat ${fmt.format(disc)}.`;
+      };
+      const validatePay = ()=>{
+        const m = State.getPay();
+        const t = Cart.calc().total;
+        let msg = '';
+        let min = 0;
+        if(m==='bank') min=25000; else if(m==='ewallet') min=10000; else if(m==='debit') min=20000; else min=0;
+        if(t < min){ msg = `Minimum untuk metode ini ${fmt.format(min)}. Tambah belanja atau pilih metode lain.`; }
+        $('#payMsg').textContent = msg || 'Metode pembayaran dipilih.';
+        $('#placeOrder').disabled = (State.getCart().length===0) || (t<min);
+      };
+      const renderReceipt = (order)=>{
+        $('#receiptMeta').innerHTML = `
+          <div class="row"><span>No. Order</span><strong class="order-code">${order.code}</strong></div>
+          <div class="row"><span>Tanggal</span><strong>${new Date(order.date).toLocaleString('id-ID')}</strong></div>
+          <div class="row"><span>Layanan</span><strong>${order.service}</strong></div>
+          <div class="row"><span>Pembayaran</span><strong>${order.pay}</strong></div>
+          ${order.coupon?`<div class="row"><span>Kupon</span><strong>${order.coupon}</strong></div>`:''}
+        `;
+        $('#receiptItems').innerHTML = order.items.map(x=>`
+          <div class="row"><span>${x.name} × ${x.qty}</span><strong>${fmt.format(x.line)}</strong></div>
+        `).join('');
+        $('#receiptTotals').innerHTML = `
+          <div class="row"><span>Subtotal</span><strong>${fmt.format(order.subtotal)}</strong></div>
+          <div class="row"><span>Diskon</span><strong>- ${fmt.format(order.discount)}</strong></div>
+          <div class="row"><span>Biaya Layanan</span><strong>${fmt.format(order.fee)}</strong></div>
+          <div class="row"><span>Total</span><strong>${fmt.format(order.total)}</strong></div>
+        `;
+      };
+      return {chipsBind,renderBest,renderMenu,renderCart,renderCoupons,showCouponMessage,validatePay,renderReceipt};
+    })();
+
+    // Interaksi UI
+    const Bind = (()=>{
+      const on = ()=>{
+        // Pencarian
+        $('#q').addEventListener('input', e=> State.setFilters({q:e.target.value}) );
+        // Sort
+        $('#sort').addEventListener('change', e=> State.setFilters({sort:e.target.value}) );
+        // Service option
+        $('#service').addEventListener('change', e=>{ State.setService(e.target.value); UI.renderCart(); });
+        // Subcat & rating
+        $('#subcat').addEventListener('change', e=> State.setFilters({sub:e.target.value}) );
+        $('#minRating').addEventListener('change', e=> State.setFilters({minRating:Number(e.target.value)}) );
+        // Best see all
+        $('#btnShowAll').addEventListener('click',()=>{ $$('.chip').forEach(c=>c.classList.remove('active')); State.setFilters({cat:'all', sub:'all', best:false}); UI.renderMenu(); });
+        // Coupon
+        $('#applyCoupon').addEventListener('click',()=> applyCoupon($('#couponCode').value.trim()) );
+        $('#couponList').addEventListener('click', (e)=>{ const code = e.target?.dataset?.claim; if(code){ $('#couponCode').value=code; applyCoupon(code); }});
+        // Cart actions (delegation for both desktop & mobile roots)
+        ['#menu','#cart','#cartMobile'].forEach(root=>{
+          document.body.addEventListener('click', (e)=>{
+            const tgt = e.target;
+            if(!(tgt instanceof HTMLElement)) return;
+            const add = tgt.dataset.add; if(add){ Cart.add(add); return; }
+            const inc = tgt.dataset.inc; if(inc){ const found = State.getCart().find(c=>c.id===inc); Cart.setQty(inc, (found?.qty||0)+1); return; }
+            const dec = tgt.dataset.dec; if(dec){ const found = State.getCart().find(c=>c.id===dec); Cart.setQty(dec, (found?.qty||0)-1); return; }
+            const del = tgt.dataset.del; if(del){ Cart.remove(del); return; }
+          });
+        });
+        // Quantity input manual in cards
+        document.body.addEventListener('change', (e)=>{
+          const t = e.target; if(!(t instanceof HTMLInputElement)) return;
+          const wrap = t.closest('[data-qty]'); if(!wrap) return;
+          const id = wrap.getAttribute('data-qty');
+          Cart.setQty(id, Number(t.value||0));
+        });
+        // Payment method
+        document.body.addEventListener('change', (e)=>{
+          const t = e.target; if(!(t instanceof HTMLInputElement)) return;
+          if(t.name==='pay'){ State.setPay(t.value); UI.validatePay(); }
+        });
+        // Place order
+        $('#placeOrder').addEventListener('click', placeOrder);
+        // Mobile drawer
+        $('#openCart').addEventListener('click', ()=> $('#drawer').classList.add('open'));
+        $('#closeCart').addEventListener('click', ()=> $('#drawer').classList.remove('open'));
+      };
+      const applyCoupon = (code)=>{
+        if(!code){ State.setCoupon(null); UI.showCouponMessage(); UI.renderCart(); return; }
+        const cp = Coupons.find(code);
+        if(!cp){ alert('Kode tidak valid'); return; }
+        State.setCoupon(cp.code);
+        UI.showCouponMessage();
+        UI.renderCart();
+      };
+      const placeOrder = ()=>{
+        const c = Cart.calc();
+        if(State.getCart().length===0) return;
+        // Validasi metode bayar
+        const m = State.getPay();
+        let min = 0; if(m==='bank') min=25000; else if(m==='ewallet') min=10000; else if(m==='debit') min=20000;
+        if(c.total < min){ alert('Total belum memenuhi minimum untuk metode ini.'); return; }
+        // Buat order
+        const code = 'NB' + Date.now().toString().slice(-8);
+        const order = {
+          code, date: Date.now(), service: State.getService(), pay: m, coupon: State.getCoupon(),
+          items: c.items.map(x=>({id:x.id, name:x.name, qty:x.qty, line:x.line})),
+          subtotal:c.subtotal, discount:c.discount, fee:c.fee, total:c.total
+        };
+        // Simpan riwayat ringkas
+        const history = Storage.safe('nb_orders', []);
+        history.push(order); Storage.set('nb_orders', history);
+        // Render receipt & print
+        UI.renderReceipt(order);
+        setTimeout(()=>{ window.print(); }, 50);
+        // Reset keranjang & kupon setelah order
+        State.setCart([]); State.setCoupon(null);
+      };
+      return {on};
+    })();
+
+    // Sync UI ketika state berubah
+    const Sync = (()=>{
+      Events.on('filters:changed', ()=>{ UI.renderMenu(); Storage.set('nb_filters', State.getFilters()); });
+      Events.on('cart:changed', ()=> UI.renderCart());
+      Events.on('service:changed', ()=> UI.renderCart());
+      Events.on('coupon:changed', ()=>{ UI.showCouponMessage(); UI.renderCart(); });
+      Events.on('pay:changed', ()=> UI.validatePay());
+      return {};
+    })();
+
+    // Init
+    (function init(){
+      // restore controls
+      const f = State.getFilters();
+      $('#q').value = f.q || '';
+      $('#sort').value = f.sort || 'rating-desc';
+      $('#service').value = State.getService();
+      $('#subcat').value = f.sub || 'all';
+      $('#minRating').value = String(f.minRating||0);
+      // chips active
+      $$('.chip').forEach(c=>{ if(c.dataset.cat===f.cat) c.classList.add('active'); else if(c.dataset.cat) c.classList.remove('active'); });
+
+      UI.chipsBind();
+      UI.renderBest();
+      UI.renderMenu();
+      UI.renderCart();
+      UI.renderCoupons();
+      Bind.on();
+      // set default payment if none
+      const p = State.getPay();
+      const target = document.querySelector(`input[name="pay"][value="${p}"]`) || document.querySelector('input[name="pay"][value="cash"]');
+      if(target) { target.checked = true; UI.validatePay(); }
+    })();
+
+  })();
+  </script>
+</body>
 </html>
